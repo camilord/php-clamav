@@ -18,7 +18,7 @@
   },
   "autoload": {
     "psr-4": {
-      "camilord\\php-clamav\\": "./src/"
+      "camilord\\phpclamav\\": "./src/"
     }
   },
   "require-dev": {

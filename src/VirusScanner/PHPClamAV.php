@@ -1,12 +1,12 @@
 <?php
 
 
-namespace camilord\VirusScanner;
+namespace camilord\phpclamav\VirusScanner;
 
 
 /**
  * Class PHPClamAV
- * @package camilord\VirusScanner
+ * @package camilord\phpclamav\VirusScanner
  */
 class PHPClamAV
 {
@@ -25,36 +25,49 @@ class PHPClamAV
      */
     public function scan($file, $scan_mode = 1)
     {
-        if (!file_exists($file)) {
+        if (!file_exists($file) || !is_file($file)) {
             return null;
         }
 
         $scan_mode = intval($scan_mode);
-        $cmd = "clamscan [MODES] {$file}";
+        $cmd = "clamscan [MODES] \"{$file}\"";
+        $modes = "";
 
         if ($scan_mode === self::AV_SCAN_MODE_FULL) {
-            $cmd .= " --detect-pua=y ";
-            $cmd .= " --detect-structured=y ";
-            $cmd .= " --phishing-sigs=y ";
-            $cmd .= " --algorithmic-detection=y ";
+            $modes .= " --detect-pua=y ";
+            $modes .= " --detect-structured=y ";
+            $modes .= " --phishing-sigs=y ";
+            $modes .= " --algorithmic-detection=y ";
         } else if ($scan_mode === self::AV_SCAN_MODE_PHISHING) {
-            $cmd .= " --phishing-sigs=y ";
+            $modes .= " --phishing-sigs=y ";
         } else if ($scan_mode === self::AV_SCAN_MODE_STRUCTURED) {
-            $cmd .= " --detect-structured=y ";
+            $modes .= " --detect-structured=y ";
         } else if ($scan_mode === self::AV_SCAN_MODE_PUA) {
-            $cmd .= " --detect-pua=y ";
+            $modes .= " --detect-pua=y ";
         } else if ($scan_mode === self::AV_SCAN_MODE_ALGORITHMIC) {
-            $cmd .= " ---algorithmic-detection=y ";
+            $modes .= " ---algorithmic-detection=y ";
         } else {
-            // do nothing ...
+            $modes = "";
         }
+        $cmd = str_replace("[MODES]", $modes, $cmd);
 
         ob_start();
         system($cmd);
-        $result = ob_get_contents();
+        $cli_output = ob_get_contents();
         ob_end_clean();
 
         $result = new ScanResult();
+
+        $tmp = explode('----------- SCAN SUMMARY -----------', $cli_output);
+        if (preg_match("/FOUND/", $tmp[0])) {
+            $virus_name = trim(str_replace($file.':', '', trim($tmp[0])));
+            $virus_name = trim(str_replace('FOUND', '', $virus_name));
+            $result->setIsVirus(true);
+            $result->setVirusName($virus_name);
+        } else {
+            $result->setIsVirus(false);
+        }
+        $result->setSummaryNotes(trim(@$tmp[1]));
 
         return $result;
     }

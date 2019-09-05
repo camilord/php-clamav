@@ -1,11 +1,11 @@
 <?php
 
 
-namespace camilord\VirusScanner;
+namespace camilord\phpclamav\VirusScanner;
 
 /**
  * Class ScanResult
- * @package camilord\VirusScanner
+ * @package camilord\phpclamav\VirusScanner
  */
 class ScanResult
 {

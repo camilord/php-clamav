@@ -1,23 +1,61 @@
 <?php
 
 
-namespace camilord\VirusScanner;
-
+namespace camilord\phpclamav\VirusScanner;
 
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class PHPClamAVTest
- * @package camilord\VirusScanner
+ * @package camilord\phpclamav\VirusScanner
  */
 class PHPClamAVTest extends TestCase
 {
 
-    public function testScanFile() {
+    /**
+     * @param $filepath
+     * @param $expected
+     * @param $is_virus
+     * @dataProvider getTestFiles
+     */
+    public function testScanFile($filepath, $expected, $is_virus) {
 
         $obj = new PHPClamAV();
 
+        echo "\nScanning: {$filepath}\n";
+        $result = $obj->scan($filepath);
+        $actual = is_object($result);
+        $this->assertEquals($actual, $expected);
 
+        if ($result instanceof ScanResult) {
+            $this->assertEquals($is_virus, $result->isVirus(), $result->getVirusName());
+        }
+    }
 
+    /**
+     * @return array
+     */
+    public function getTestFiles() {
+        $dir = __DIR__.'/sample_files/';
+        $files = scandir($dir);
+
+        $test_files = [];
+
+        foreach($files as $file) {
+
+            $filepath = $dir.$file;
+
+            // if true means able to scan, if false means null result on the scanner
+            $expected = (file_exists($filepath) && is_file($filepath)) ? true : false;
+            $is_virus = (preg_match("/Invoice.*\\.(doc|zip)$/", $file)) ? true : false;
+
+            $test_files[] = [
+                'filepath' => $filepath,
+                'expected' => $expected,
+                'is_virus' => $is_virus
+            ];
+        }
+
+        return $test_files;
     }
 }
