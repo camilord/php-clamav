@@ -22,7 +22,7 @@ class PHPClamAVTest extends TestCase
 
         $obj = new PHPClamAV();
 
-        echo "\nScanning: {$filepath}\n";
+        echo "\n".(is_file($filepath) ? 'Scanning' : 'Skipping').": {$filepath}\n";
         $result = $obj->scan($filepath);
         $actual = is_object($result);
         $this->assertEquals($actual, $expected);

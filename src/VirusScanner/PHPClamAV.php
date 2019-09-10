@@ -4,6 +4,8 @@
 namespace camilord\phpclamav\VirusScanner;
 
 
+use camilord\utilus\IO\FileUtilus;
+
 /**
  * Class PHPClamAV
  * @package camilord\phpclamav\VirusScanner
@@ -34,21 +36,26 @@ class PHPClamAV
         $modes = "";
 
         if ($scan_mode === self::AV_SCAN_MODE_FULL) {
-            $modes .= " --detect-pua=y ";
-            $modes .= " --detect-structured=y ";
-            $modes .= " --phishing-sigs=y ";
-            $modes .= " --algorithmic-detection=y ";
+            $modes .= " --detect-pua=yes ";
+            $modes .= " --detect-structured=yes ";
+            $modes .= " --phishing-sigs=yes ";
+            $modes .= " --algorithmic-detection=yes ";
         } else if ($scan_mode === self::AV_SCAN_MODE_PHISHING) {
-            $modes .= " --phishing-sigs=y ";
+            $modes .= " --phishing-sigs=yes ";
         } else if ($scan_mode === self::AV_SCAN_MODE_STRUCTURED) {
-            $modes .= " --detect-structured=y ";
+            $modes .= " --detect-structured=yes ";
         } else if ($scan_mode === self::AV_SCAN_MODE_PUA) {
-            $modes .= " --detect-pua=y ";
+            $modes .= " --detect-pua=yes ";
         } else if ($scan_mode === self::AV_SCAN_MODE_ALGORITHMIC) {
-            $modes .= " ---algorithmic-detection=y ";
+            $modes .= " --algorithmic-detection=yes ";
         } else {
             $modes = "";
         }
+
+        if (strtolower(FileUtilus::get_extension($file)) === 'pdf') {
+            $modes .= " --scan-pdf=yes ";
+        }
+
         $cmd = str_replace("[MODES]", $modes, $cmd);
 
         ob_start();
