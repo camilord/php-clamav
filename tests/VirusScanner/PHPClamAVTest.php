@@ -33,6 +33,27 @@ class PHPClamAVTest extends TestCase
     }
 
     /**
+     * @param $filepath
+     * @param $expected
+     * @param $is_virus
+     * @dataProvider getTestFiles
+     */
+    public function testScanFileUsingDaemon($filepath, $expected, $is_virus)
+    {
+        $obj = new PHPClamAV();
+
+        echo "\n".(is_file($filepath) ? 'Scanning' : 'Skipping').": {$filepath}\n";
+        $result = $obj->daemon_scan($filepath);
+
+        $actual = is_object($result);
+        $this->assertEquals($actual, $expected);
+
+        if ($result instanceof ScanResult) {
+            $this->assertEquals($is_virus, $result->isVirus(), $result->getVirusName());
+        }
+    }
+
+    /**
      * @return array
      */
     public function getTestFiles() {
