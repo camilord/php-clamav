@@ -32,6 +32,9 @@ class PHPClamAV
         if (!file_exists($file) || !is_file($file)) {
             return null;
         }
+        if (!$this->command_exists('clamscan')) {
+            return null;
+        }
 
         $scan_mode = intval($scan_mode);
         $cmd = "clamscan [MODES] \"{$file}\"";
@@ -101,6 +104,9 @@ class PHPClamAV
         if (!file_exists($file) || !is_file($file)) {
             return null;
         }
+        if (!$this->command_exists('clamdscan')) {
+            return null;
+        }
 
         $cmd = "clamdscan \"{$file}\"";
 
@@ -123,5 +129,13 @@ class PHPClamAV
         $result->setSummaryNotes(trim(@$tmp[1]));
 
         return $result;
+    }
+
+    /**
+     * @param string $command_name
+     * @return bool
+     */
+    private function command_exists($command_name) {
+        return (null === shell_exec("command -v {$command_name}")) ? false : true;
     }
 }

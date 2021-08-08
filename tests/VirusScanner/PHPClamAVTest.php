@@ -3,6 +3,7 @@
 
 namespace camilord\phpclamav\VirusScanner;
 
+use camilord\utilus\IO\SystemUtilus;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -19,6 +20,10 @@ class PHPClamAVTest extends TestCase
      * @dataProvider getTestFiles
      */
     public function testScanFile($filepath, $expected, $is_virus) {
+
+        if (SystemUtilus::isWin32()) {
+            $this->markTestSkipped('for Linux Only');
+        }
 
         $obj = new PHPClamAV();
 
@@ -40,6 +45,10 @@ class PHPClamAVTest extends TestCase
      */
     public function testScanFileUsingDaemon($filepath, $expected, $is_virus)
     {
+        if (SystemUtilus::isWin32()) {
+            $this->markTestSkipped('for Linux Only');
+        }
+
         $obj = new PHPClamAV();
 
         echo "\n".(is_file($filepath) ? 'Scanning' : 'Skipping').": {$filepath}\n";
