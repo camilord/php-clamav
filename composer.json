@@ -1,6 +1,5 @@
 {
   "name": "camilord/php-clamav",
-  "version": "0.0.1",
   "homepage": "https://github.com/camilord/utilus",
   "description": "PHP-ClamAV library - to scan the file for viruses",
   "type": "library",
