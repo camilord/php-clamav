@@ -135,7 +135,8 @@ class PHPClamAV
      * @param string $command_name
      * @return bool
      */
-    private function command_exists($command_name) {
+    private function command_exists($command_name)
+    {
         return (null === shell_exec("command -v {$command_name}")) ? false : true;
     }
 }
