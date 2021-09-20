@@ -126,7 +126,7 @@ class PHPClamAV
         $result_tmp = $this->process_stats($cli_output);
 
         $key = str_replace(' ', '', ucwords(trim($file)));
-        $virus_name = $result_tmp[$key];
+        $virus_name = isset($result_tmp[$key]) ? $result_tmp[$key] : $tmp[0];
 
         if (preg_match("/FOUND/", $virus_name)) {
             $virus_name = trim(str_replace('FOUND', '', $virus_name));
