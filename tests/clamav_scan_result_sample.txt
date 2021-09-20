@@ -1,0 +1,45 @@
+camilord@abcs01-2021:~/sample_files$ clamdscan invoice.doc
+/home/camilord/sample_files/invoice.doc: Html.Malware.Agent-7789772-0 FOUND
+
+----------- SCAN SUMMARY -----------
+Infected files: 1
+Time: 0.019 sec (0 m 0 s)
+Start Date: 2021:09:20 18:28:35
+End Date:   2021:09:20 18:28:35
+camilord@abcs01-2021:~/sample_files$ clamdscan pdf-example-fonts.pdf
+/home/camilord/sample_files/pdf-example-fonts.pdf: OK
+
+----------- SCAN SUMMARY -----------
+Infected files: 0
+Time: 0.129 sec (0 m 0 s)
+Start Date: 2021:09:20 18:32:01
+End Date:   2021:09:20 18:32:01
+camilord@abcs01-2021:~/sample_files$ clamscan invoice.doc
+/home/camilord/sample_files/invoice.doc: Html.Malware.Agent-7789772-0 FOUND
+
+----------- SCAN SUMMARY -----------
+Known viruses: 8566686
+Engine version: 0.103.2
+Scanned directories: 0
+Scanned files: 1
+Infected files: 1
+Data scanned: 0.02 MB
+Data read: 0.02 MB (ratio 1.50:1)
+Time: 13.741 sec (0 m 13 s)
+Start Date: 2021:09:20 18:51:52
+End Date:   2021:09:20 18:52:05
+camilord@abcs01-2021:~/sample_files$ clamscan pdf-example-fonts.pdf
+/home/camilord/sample_files/pdf-example-fonts.pdf: OK
+
+----------- SCAN SUMMARY -----------
+Known viruses: 8566686
+Engine version: 0.103.2
+Scanned directories: 0
+Scanned files: 1
+Infected files: 0
+Data scanned: 2.16 MB
+Data read: 0.69 MB (ratio 3.12:1)
+Time: 13.265 sec (0 m 13 s)
+Start Date: 2021:09:20 18:52:15
+End Date:   2021:09:20 18:52:28
+camilord@abcs01-2021:~/sample_files$

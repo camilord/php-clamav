@@ -4,6 +4,7 @@
 namespace camilord\phpclamav\VirusScanner;
 
 
+use camilord\utilus\Data\ArrayUtilus;
 use camilord\utilus\IO\FileUtilus;
 
 /**
@@ -18,6 +19,11 @@ class PHPClamAV
     const AV_SCAN_MODE_PUA = 4;
     const AV_SCAN_MODE_ALGORITHMIC = 5;
     const AV_SCAN_MODE_FULL = 10;
+
+    /**
+     * @var array
+     */
+    private $scan_stats = [];
 
 
     /**
@@ -71,7 +77,13 @@ class PHPClamAV
         $result = new ScanResult();
 
         $tmp = explode('----------- SCAN SUMMARY -----------', $cli_output);
-        if (preg_match("/FOUND/", $tmp[0])) {
+
+
+
+        if (
+            preg_match("/FOUND/", $tmp[0]) &&
+            stripos($cli_output, 'Infected files: 0') === 0
+        ) {
             $virus_name = trim(str_replace($file.':', '', trim($tmp[0])));
             $virus_name = trim(str_replace('FOUND', '', $virus_name));
             $result->setIsVirus(true);
@@ -118,6 +130,11 @@ class PHPClamAV
         $result = new ScanResult();
 
         $tmp = explode('----------- SCAN SUMMARY -----------', $cli_output);
+
+        if (ArrayUtilus::haveData($tmp[1])) {
+            $this->scan_stats = $this->process_stats($tmp[1]);
+        }
+
         if (preg_match("/FOUND/", $tmp[0])) {
             $virus_name = trim(str_replace($file.':', '', trim($tmp[0])));
             $virus_name = trim(str_replace('FOUND', '', $virus_name));
@@ -138,5 +155,30 @@ class PHPClamAV
     private function command_exists($command_name)
     {
         return (null === shell_exec("command -v {$command_name}")) ? false : true;
+    }
+
+    /**
+     * @param $stats_text
+     * @return array
+     */
+    private function process_stats($stats_text) {
+        $array_stats = [];
+        $lines = explode("\n", $stats_text);
+        foreach($lines as $line) {
+            if (stripos($line, ':') !== false) {
+                $tmp = explode(':', $line);
+                $key = str_replace(' ', '', ucwords(trim($tmp[0])));
+
+                if (count($tmp) > 2) {
+                    array_shift($tmp);
+                    $array_stats[$key] = trim(implode(':', $tmp));
+                } else {
+                    $val = trim($tmp[1]);
+                    $array_stats[$key] = $val;
+                }
+            }
+        }
+
+        return $array_stats;
     }
 }
