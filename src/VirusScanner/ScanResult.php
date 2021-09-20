@@ -12,6 +12,7 @@ class ScanResult
     private $isVirus = false;
     private $virusName = '';
     private $summaryNotes = '';
+    private $stats = [];
 
     /**
      * @return bool
@@ -60,4 +61,21 @@ class ScanResult
     {
         $this->summaryNotes = $summaryNotes;
     }
+
+    /**
+     * @return array
+     */
+    public function getStats(): array
+    {
+        return $this->stats;
+    }
+
+    /**
+     * @param array $stats
+     */
+    public function setStats(array $stats): void
+    {
+        $this->stats = $stats;
+    }
+
 }

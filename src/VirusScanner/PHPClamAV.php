@@ -21,12 +21,6 @@ class PHPClamAV
     const AV_SCAN_MODE_FULL = 10;
 
     /**
-     * @var array
-     */
-    private $scan_stats = [];
-
-
-    /**
      * apt install clamav
      *
      * @param string $file - full path of the file
@@ -74,26 +68,7 @@ class PHPClamAV
         $cli_output = ob_get_contents();
         ob_end_clean();
 
-        $result = new ScanResult();
-
-        $tmp = explode('----------- SCAN SUMMARY -----------', $cli_output);
-
-
-
-        if (
-            preg_match("/FOUND/", $tmp[0]) &&
-            stripos($cli_output, 'Infected files: 0') === 0
-        ) {
-            $virus_name = trim(str_replace($file.':', '', trim($tmp[0])));
-            $virus_name = trim(str_replace('FOUND', '', $virus_name));
-            $result->setIsVirus(true);
-            $result->setVirusName($virus_name);
-        } else {
-            $result->setIsVirus(false);
-        }
-        $result->setSummaryNotes(trim(@$tmp[1]));
-
-        return $result;
+        return $this->process_result($file, $cli_output);
     }
 
     /**
@@ -127,15 +102,29 @@ class PHPClamAV
         $cli_output = ob_get_contents();
         ob_end_clean();
 
+        return $this->process_result($file, $cli_output);
+    }
+
+    /**
+     * @param string $file
+     * @param mixed $cli_output
+     * @return ScanResult
+     */
+    private function process_result(string $file, $cli_output)
+    {
         $result = new ScanResult();
 
         $tmp = explode('----------- SCAN SUMMARY -----------', $cli_output);
 
+        $stats = [];
         if (ArrayUtilus::haveData($tmp[1])) {
-            $this->scan_stats = $this->process_stats($tmp[1]);
+            $stats = $this->process_stats($tmp[1]);
         }
 
-        if (preg_match("/FOUND/", $tmp[0])) {
+        if (
+            preg_match("/FOUND/", $tmp[0]) &&
+            stripos($cli_output, 'Infected files: 0') === 0
+        ) {
             $virus_name = trim(str_replace($file.':', '', trim($tmp[0])));
             $virus_name = trim(str_replace('FOUND', '', $virus_name));
             $result->setIsVirus(true);
@@ -143,7 +132,9 @@ class PHPClamAV
         } else {
             $result->setIsVirus(false);
         }
+
         $result->setSummaryNotes(trim(@$tmp[1]));
+        $result->setStats($stats);
 
         return $result;
     }
@@ -161,7 +152,8 @@ class PHPClamAV
      * @param $stats_text
      * @return array
      */
-    private function process_stats($stats_text) {
+    private function process_stats($stats_text)
+    {
         $array_stats = [];
         $lines = explode("\n", $stats_text);
         foreach($lines as $line) {
