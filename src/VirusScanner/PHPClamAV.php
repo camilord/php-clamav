@@ -117,8 +117,10 @@ class PHPClamAV
         $tmp = explode('----------- SCAN SUMMARY -----------', $cli_output);
 
         $stats = [];
-        if (ArrayUtilus::haveData($tmp[1])) {
-            $stats = $this->process_stats($tmp[1]);
+        $summary_notes = '';
+        if (isset($tmp[1])) {
+            $summary_notes = trim($tmp[1]);
+            $stats = $this->process_stats($summary_notes);
         }
 
         if (
@@ -133,7 +135,7 @@ class PHPClamAV
             $result->setIsVirus(false);
         }
 
-        $result->setSummaryNotes(trim(@$tmp[1]));
+        $result->setSummaryNotes($summary_notes);
         $result->setStats($stats);
 
         return $result;
