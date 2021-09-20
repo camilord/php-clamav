@@ -123,17 +123,17 @@ class PHPClamAV
             $stats = $this->process_stats($summary_notes);
         }
 
-        if (
-            preg_match("/FOUND/", $tmp[0]) &&
-            stripos($cli_output, 'Infected files: 0') === 0
-        ) {
-            $virus_name = trim(str_replace($file.':', '', trim($tmp[0])));
+        $result_tmp = $this->process_stats($cli_output);
+        $virus_name = $result_tmp[$file];
+
+        if (preg_match("/FOUND/", $virus_name)) {
             $virus_name = trim(str_replace('FOUND', '', $virus_name));
             $result->setIsVirus(true);
             $result->setVirusName($virus_name);
         } else {
             $result->setIsVirus(false);
         }
+        unset($result_tmp);
 
         $result->setSummaryNotes($summary_notes);
         $result->setStats($stats);
